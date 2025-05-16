@@ -1,0 +1,19 @@
+{
+    "name": "dan-q/dmg-media-wp-plugin-demo",
+    "description": "WordPress plugin to find posts and display them as styled links.",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "Dan Q",
+            "email": "github@danq.me"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "require-dev": {
+        "wp-coding-standards/wpcs": "^3.0"
+    }
+}

@@ -1,1 +1,11 @@
+# Dev WordPress environment
 wp
+
+# Plugin dependencies
+dmg-post-finder/node_modules
+
+# Plugin build logs
+dmg-post-finder/*.log*
+
+# Composer vendor directory (e.g. where wp-coding-standards/wpcs is installed)
+dmg-post-finder/vendor
