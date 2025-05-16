@@ -180,6 +180,16 @@ registerBlockType("dmg/post-finder", {
       );
     };
 
+		/* For performace reasons, we don't necessarily want to render pagination buttons for every page
+		 * (what if there are thousands of them, especially on first load of "recent posts"). So let's be
+		 * smarter about it and choose to show a sendible range.
+		 * (If this gets used elsewhere, it should be a utility component)
+		 */
+		const lastPaginationPage = Math.min(totalPages, page + 3);
+		const firstPaginationPage = Math.max(1, page - ( lastPaginationPage == totalPages ? 2 : 1 ));
+		const morePaginationBeyondFirst = firstPaginationPage > 1;
+		const morePaginationBeyondLast = lastPaginationPage < totalPages;
+
     return (
       <>
         <InspectorControls>
@@ -220,7 +230,20 @@ registerBlockType("dmg/post-finder", {
 
                 {totalPages > 1 && (
                   <div className="dmg-post-finder__pagination">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    {morePaginationBeyondFirst && (
+											<>
+												<Button
+													key={1}
+													variant={1 === page ? "primary" : "secondary"}
+													onClick={() => handlePageChange(1)}
+													style={{ margin: "0 4px" }}
+												>
+													1
+												</Button>
+												<span>…</span>
+											</>
+										)}
+                    {Array.from({ length: lastPaginationPage - firstPaginationPage }, (_, i) => i + firstPaginationPage).map(
                       (pageNum) => (
                         <Button
                           key={pageNum}
@@ -232,6 +255,19 @@ registerBlockType("dmg/post-finder", {
                         </Button>
                       ),
                     )}
+                    {morePaginationBeyondLast && (
+											<>
+												<span>…</span>
+												<Button
+													key={totalPages}
+													variant={totalPages === page ? "primary" : "secondary"}
+													onClick={() => handlePageChange(totalPages)}
+													style={{ margin: "0 4px" }}
+												>
+													{totalPages}
+												</Button>
+											</>
+										)}
                   </div>
                 )}
               </div>
