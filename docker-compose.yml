@@ -1,5 +1,6 @@
 services:
   wp:
+    container_name: dmg-wp
     image: wordpress:6.8.1-php8.4
     ports:
       - 8080:80
@@ -22,20 +23,8 @@ services:
     links:
       - db
 
-  wpcli:
-    image: wordpress:cli
-    volumes:
-      - ./wp:/var/www/html
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_NAME: wp
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: password
-    depends_on:
-      - db
-      - wp
-
   db:
+    container_name: dmg-db
     image: mariadb:latest
     command: [
         '--character-set-server=utf8mb4',
