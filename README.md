@@ -32,7 +32,9 @@ If no posts are found, or any other errors encountered, output a log message.
 
 ## Usage
 
-### Docker-based development environment
+### Using the Gutenberg Block
+
+#### Docker-based development environment
 
 This plugin is provided "batteries included" with a working WordPress development environment, configured using Docker. Get started by
 running:
@@ -49,7 +51,7 @@ The following services will be exposed:
 The database will be preconfigured with a selection of sample posts for testing. The titles of these posts contain a variety of pet-related
 words, e.g. "dog", "cat", "hamster".
 
-### Working without Docker
+#### Working without Docker
 
 The plugin lives in `dmg-post-finder/`. You can rebuild the JavaScript from sources with:
 
@@ -62,12 +64,65 @@ npm run build # or npm run start for auto watch
 Linting is enabled with `npm run lint:js` and `npm run lint:php` (or `npm run lint` for both). PHP linting requires dependencies managed
 using Composer (run `composer install` in the `dmg-post-finder` directory).
 
+Mount the plugin into your favourite WordPress site and you're set to go.
+
+### Using the WP-CLI Command
+
+If you're using the Dockerised development environment, you can try out the search tool using a one-liner like this:
+
+```bash
+docker run -it --rm --volumes-from dmg-wp --network container:dmg-wp \
+           -e WORDPRESS_DB_HOST=db -e WORDPRESS_DB_NAME=wp \
+           -e WORDPRESS_DB_USER=root -e WORDPRESS_DB_PASSWORD=password \
+           wordpress:cli \
+           wp dmg-read-more search --date-after=2000-01-01 --date-before=2025-06-01 # <- this is the WP-CLI command to run
+```
+
+#### Performance Testing
+
+To do some elementary performance testing, it might be useful to have a _lot_ of posts. You might happen to have tens of millions
+of rows to-hand already, but if not, take a look at `20000-posts-for-testing.sql.gz`. Import that SQL file into your database to
+introduce 200,000 Posts to your `wp_posts` table. Half of these new Posts have the new block on them and half do not. Ordered
+by insert order they're in batches of 10,000 "with", 10,000 "without"; ordered chronologically they alternate.
+
+These Posts span the period 2000-01-01 through 2000-01-11. So after importing them, you might perform a speed test with e.g.:
+
+```bash
+time \
+docker run -it --rm --volumes-from dmg-wp --network container:dmg-wp \
+           -e WORDPRESS_DB_HOST=db -e WORDPRESS_DB_NAME=wp \
+           -e WORDPRESS_DB_USER=root -e WORDPRESS_DB_PASSWORD=password \
+           wordpress:cli \
+           wp dmg-read-more search --date-after=2000-01-01
+```
+
+Note that this will of course suffer from overheads as a result of spinning up the Docker container; you're likely to want to
+run from within an existing container or else in a more-realistic environment if you're concerned about absolute performance metrics.
+
+#### Alternative Implementations
+
+Because of the stipulation that "performance is key", I've optimised for performance in the WP-CLI command at the expense of almost
+everything else: this implementation uses an SQL `LIKE` clause to offload the processing onto the database server, which in almost
+every case will result in better performance than pulling Posts in WordPress and checking with e.g. `has_block(...)`.
+
+However, the approach has limitations that could result in false positives in the (highly-unlikely) event than an editor introduces
+a _false_ HTML comment to their content. For a discussion of the implications and a demonstrative alternate implementation, see the
+comments in `includes/class-cli.php`.
+
+There of course exist further alternative implementations which could result in even-better performance, but it seemed unlikely that
+this would actually be needed. For example, upon updating a Post a transient could be updated to add or remove the current Post's ID,
+depending on whether or not it contained the new block. At the expense of slightly slower writes (when saving Posts), this would
+maximise performance for the new WP-CLI command by reducing it to an O(1) problem (and, depending on the server configuration,
+potentially load the data from RAM without hitting the database server at all).
+
 ## Repository Layout
 
 - `dmg-post-finder/` - ⭐ the plugin itself
     - `build/` - compiled version of the JavaScript code
     - `src/` - JSX sources
-    - `includes/` - PHP code to support the plugin
+    - `includes/`
+        - `class-cli.php` - features relating to the new WP-CLI command
+        - `class-gutenbergblock.php` - features relating to the new Gutenberg block
     - `dmg-post-finder.php` - PHP entrypoint for the plugin
     - Composer dependency files (for WordPress Coding Standards linting)
     - Node dependency files
@@ -76,4 +131,5 @@ using Composer (run `composer install` in the `dmg-post-finder` directory).
     - `wp/wp-content/debug.log` - the Dockerised WordPress is configured with `WP_DEBUG=true`, logging to this file
 - `wp-data/initial-db.sql` - skeleton data used to populate the dev database
 - `docker-compose.yml` - Docker configuration
+- `20000-posts-for-testing.sql.gz` - GZipped SQL which, if run, will add 200,000 Posts to your `wp_posts` table
 - `README.md` - this readme

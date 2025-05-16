@@ -18,3 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-gutenbergblock.php';
 $gutenberg_block = new GutenbergBlock();
 $gutenberg_block->init();
+
+/* Load CLI command if WP-CLI is available */
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-cli.php';
+}
