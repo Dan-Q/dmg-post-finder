@@ -66,14 +66,14 @@ registerBlockType("dmg/post-finder", {
       loadRecentPosts();
     }, []);
 
-		/**
-		 * Utility function to perform a search, used both when loading recent posts (call with no parameters) and when
-		 * searching for a specific term (call with a search term and optional page number).
-		 * 
-		 * @param {string} performSearchTerm - The search term to use for the search. Leave blank to load recent posts.
-		 * @param {number} performSearchPage - The page number to use for the search. Defaults to 1.
-		 * @returns {Promise} A promise that resolves to the search results, or rejects with an error.
-		 */
+    /**
+     * Utility function to perform a search, used both when loading recent posts (call with no parameters) and when
+     * searching for a specific term (call with a search term and optional page number).
+     *
+     * @param {string} performSearchTerm - The search term to use for the search. Leave blank to load recent posts.
+     * @param {number} performSearchPage - The page number to use for the search. Defaults to 1.
+     * @return {Promise} A promise that resolves to the search results, or rejects with an error.
+     */
     const performSearch = (performSearchTerm = "", performSearchPage = 1) => {
       setIsSearching(true);
 
