@@ -45,7 +45,7 @@ docker compose up
 
 The following services will be exposed:
 
-- http://localhost:8080/ (the test site)
+- http://localhost:8080/ (the test site; log in using username `dmg@example.com`, password `password`)
 - MariaDB server on port 8081 (username `root`, password `password`, database name `wp`)
 
 The database will be preconfigured with a selection of sample posts for testing. The titles of these posts contain a variety of pet-related
@@ -113,7 +113,7 @@ There of course exist further alternative implementations which could result in 
 this would actually be needed. For example, upon updating a Post a transient could be updated to add or remove the current Post's ID,
 depending on whether or not it contained the new block. At the expense of slightly slower writes (when saving Posts), this would
 maximise performance for the new WP-CLI command by reducing it to an O(1) problem (and, depending on the server configuration,
-potentially load the data from RAM without hitting the database server at all).
+potentially load the data from RAM without hitting the database server at all!).
 
 ## Repository Layout
 
