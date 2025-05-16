@@ -34,6 +34,8 @@ If no posts are found, or any other errors encountered, output a log message.
 
 ### Using the Gutenberg Block
 
+https://github.com/user-attachments/assets/1c7a159a-6413-4a47-8471-c3fb18eec173
+
 #### Docker-based development environment
 
 This plugin is provided "batteries included" with a working WordPress development environment, configured using Docker. Get started by
@@ -98,6 +100,8 @@ docker run -it --rm --volumes-from dmg-wp --network container:dmg-wp \
 
 Note that this will of course suffer from overheads as a result of spinning up the Docker container; you're likely to want to
 run from within an existing container or else in a more-realistic environment if you're concerned about absolute performance metrics.
+
+https://github.com/user-attachments/assets/9c271d2c-aaa3-49c3-842e-ab25ca5588e3
 
 #### Alternative Implementations
 
