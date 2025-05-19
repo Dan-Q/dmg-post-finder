@@ -137,3 +137,15 @@ potentially load the data from RAM without hitting the database server at all!).
 - `docker-compose.yml` - Docker configuration
 - `20000-posts-for-testing.sql.gz` - GZipped SQL which, if run, will add 200,000 Posts to your `wp_posts` table
 - `README.md` - this readme
+
+## Troubleshooting
+
+### DB server fails to load initial import
+
+If you're using the "batteries included" Dockerized configuration and MariaDB fails to load the initial import with an error in the [first line of the SQL dump](https://github.com/Dan-Q/dmg-post-finder/blob/main/wp-data/initial-db.sql#L1) (`/*M!999999\- enable the sandbox mode */`), you're likely running an outdated MariaDB version. This can happen, for example, if your Docker image cache contains a copy of `mariadb:latest` which was the latest when you acquired it, but is no longer. [MariaDB 10.5.25, 10.6.18, 10.11.8, 11.0.6, 11.1.5, 11.2.4 and 11.4.2 introduced a change to dump formats which is not backwards-compatible](https://mariadb.org/mariadb-dump-file-compatibility-change/).
+
+To mitigate the problem:
+
+1. Stop any containers.
+2. Remove the cached image e.g. `docker image rm mariadb:latest`.
+3. Rebuild again as described above. Your copy of Docker will download a newer MariaDB image.
